@@ -96,7 +96,7 @@ object Form1: TForm1
     Width = 75
     Height = 25
     Caption = 'Limpar'
-    TabOrder = 12
+    TabOrder = 13
     OnClick = btLimparClick
   end
   object btBaixo: TButton
@@ -156,7 +156,7 @@ object Form1: TForm1
   object componentes: TPageControl
     Left = 556
     Top = 239
-    Width = 269
+    Width = 270
     Height = 202
     ActivePage = TabSheet1
     TabOrder = 10
