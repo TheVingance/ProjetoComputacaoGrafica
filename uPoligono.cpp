@@ -310,6 +310,157 @@ void Poligono::reflexaoEixoXY() { // Transformação 2D: Reflexão simultânea e
 	}
 }
 
+// Curva de Bézier: Algoritmo de de Casteljau (ponto inicial)
+void Poligono::casteljau(Ponto p0, Ponto p1, Ponto p2) {
+	pontos.push_back(p0);
+	casteljauRecursivo(p0, p1, p2);
+}
+
+// Subdivisão recursiva de Casteljau
+void Poligono::casteljauRecursivo(Ponto p0, Ponto p1, Ponto p2) {
+	double distancia = sqrt((p2.x - p0.x) * (p2.x - p0.x) + (p2.y - p0.y) * (p2.y - p0.y));
+
+	if (distancia <= 1) {
+		pontos.push_back(p2);
+	} else {
+		Ponto A, B, C;
+
+		A.x = (p0.x + p1.x) / 2;
+		A.y = (p0.y + p1.y) / 2;
+		C.x = (p1.x + p2.x) / 2;
+		C.y = (p1.y + p2.y) / 2;
+		B.x = (A.x + C.x) /  2;
+		B.y = (A.y + C.y) / 2;
+
+		casteljauRecursivo(p0, A, B);
+		casteljauRecursivo(B, C, p2);
+	}
+}
+
+// Curva de Hermite (cálculo de vetores tangentes e polinômios cúbicos)
+void Poligono::hermite(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
+	Ponto r1, r4;
+	r1.x = p2.x - p1.x;
+	r1.y = p2.y - p1.y;
+
+	r4.x = p4.x - p3.x;
+	r4.y = p4.y - p3.y;
+
+	double ghx[] = {p1.x, p4.x, r1.x, r4.x};
+	double ghy[] = {p1.y, p4.y, r1.y, r4.y};
+
+	for (double t = 0; t <= 1; t += 0.01) {
+		double xT = 0;
+		double yT = 0;
+
+		double t2 = t * t;
+		double t3 = t2 * t;
+
+		xT = ghx[0] * (2 * t3 - 3 * t2 + 1) + ghx[1] * (-2 * t3 + 3 * t2) +
+			 ghx[2] * (t3 - 2 * t2 + t) + ghx[3] * (t3 - t2);
+		yT = ghy[0] * (2 * t3 - 3 * t2 + 1) + ghy[1] * (-2 * t3 + 3 * t2) +
+			 ghy[2] * (t3 - 2 * t2 + t) + ghy[3] * (t3 - t2);
+
+		this->pontos.push_back(Ponto(xT, yT));
+	}
+}
+
+// Curva de Bézier cúbica via polinômios de Bernstein
+void Poligono::bezier(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
+	for (double t = 0; t < 1; t += 0.01) {
+		double x = 0;
+		double y = 0;
+
+		double t2 = t * t;
+		double t3 = t2 * t;
+		double mt = 1 - t;
+		double mt2 = mt * mt;
+		double mt3 = mt2 * mt;
+
+		x = mt3 * p1.x + 3 * mt2 * t * p2.x + 3 * mt * t2 * p3.x + t3 * p4.x;
+		y = mt3 * p1.y + 3 * mt2 * t * p2.y + 3 * mt * t2 * p3.y + t3 * p4.y;
+
+		this->pontos.push_back({x, y});
+	}
+}
+
+// Curva B-Spline Cúbica Uniforme (multiplicação pela matriz base M)
+void Poligono::bSpline(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
+	double M[4][4] = {{-1/6.0, 3/6.0, -3/6.0, 1/6.0},
+					  {3/6.0, -6/6.0, 3/6.0, 0/6.0},
+					  {-3/6.0, 0/6.0, 3/6.0, 0/6.0},
+					  {1/6.0, 4/6.0, 1/6.0, 0/6.0}};
+
+	double Gx[] = {p1.x, p2.x, p3.x, p4.x};
+	double Gy[] = {p1.y, p2.y, p3.y, p4.y};
+
+	double Cx[4] = {0};
+	double Cy[4] = {0};
+
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			Cx[i] += M[i][j] * Gx[j];
+			Cy[i] += M[i][j] * Gy[j];
+		}
+	}
+
+	for (double t = 0; t <= 1; t += 0.01) {
+		double xT = 0;
+		double yT = 0;
+		double t3 = t*t*t;
+		double t2 = t*t;
+		xT = Cx[0]*t3 + Cx[1]*t2 + Cx[2]*t + Cx[3];
+		yT = Cy[0]*t3 + Cy[1]*t2 + Cy[2]*t + Cy[3];
+
+		this->pontos.push_back(Ponto(xT, yT));
+	}
+}
+
+// Curva B-Spline calculada pelo método de Diferenças Progressivas (Forward Differences)
+void Poligono::fwdDifferences(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
+	double M[4][4] = {{-1/6.0, 3/6.0, -3/6.0, 1/6.0},
+					  {3/6.0, -6/6.0, 3/6.0, 0/6.0},
+					  {-3/6.0, 0/6.0, 3/6.0, 0/6.0},
+					  {1/6.0, 4/6.0, 1/6.0, 0/6.0}};
+
+	double Gx[] = {p1.x, p2.x, p3.x, p4.x};
+	double Gy[] = {p1.y, p2.y, p3.y, p4.y};
+
+	double Cx[4] = {0};
+	double Cy[4] = {0};
+
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			Cx[i] += M[i][j] * Gx[j];
+			Cy[i] += M[i][j] * Gy[j];
+		}
+	}
+
+	double t = 0.01;
+	double x       = Cx[3];
+	double deltaX  = Cx[0]*t*t*t + Cx[1]*t*t + Cx[2]*t;
+	double delta2X = 6*Cx[0]*t*t*t + 2*Cx[1]*t*t;
+	double delta3X = 6*Cx[0]*t*t*t;
+
+	double y       = Cy[3];
+	double deltaY  = Cy[0]*t*t*t + Cy[1]*t*t + Cy[2]*t;
+	double delta2Y = 6*Cy[0]*t*t*t + 2*Cy[1]*t*t;
+	double delta3Y = 6*Cy[0]*t*t*t;
+
+	int i = 0;
+	pontos.push_back(Ponto(x, y));
+	while(i<101){
+	   i++;
+	   x       += deltaX;
+	   deltaX  += delta2X;
+	   delta2X += delta3X;
+	   y       += deltaY;
+	   deltaY  += delta2Y;
+	   delta2Y += delta3Y;
+	   pontos.push_back(Ponto(x, y));
+	}
+}
+
 Ponto Poligono::novoPonto(Ponto aux, double x, double y){
 	Ponto ponto = aux;
 	ponto.x = x;

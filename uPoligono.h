@@ -27,6 +27,12 @@ class Poligono{
 	  void reflexaoEixoX();
 	  void reflexaoEixoY();
 	  void reflexaoEixoXY();
+	  void casteljau(Ponto p0, Ponto p1, Ponto p2);
+	  void casteljauRecursivo(Ponto p0, Ponto p1, Ponto p2);
+	  void hermite(Ponto p1, Ponto p2, Ponto p3, Ponto p4);
+	  void bezier(Ponto p1, Ponto p2, Ponto p3, Ponto p4);
+	  void bSpline(Ponto p1, Ponto p2, Ponto p3, Ponto p4);
+	  void fwdDifferences(Ponto p1, Ponto p2, Ponto p3, Ponto p4);
 	  Ponto novoPonto(Ponto aux, double x, double y);
 	  Poligono clipping(Janela clip);
 };

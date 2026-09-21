@@ -399,6 +399,58 @@ object Form1: TForm1
         OnClick = btEixoXYClick
       end
     end
+    object TabSheet3: TTabSheet
+      Caption = 'Curvas'
+      ImageIndex = 4
+      object btHermite: TButton
+        Left = 15
+        Top = 88
+        Width = 98
+        Height = 25
+        Caption = 'Hemite'
+        DisabledImageName = 'btHermite'
+        TabOrder = 0
+        OnClick = btHermiteClick
+      end
+      object btCurvaCasteljau: TButton
+        Left = 15
+        Top = 35
+        Width = 98
+        Height = 25
+        Caption = 'Casteljau'
+        TabOrder = 1
+        OnClick = btCurvaCasteljauClick
+      end
+      object btBezier: TButton
+        Left = 144
+        Top = 35
+        Width = 97
+        Height = 25
+        Caption = 'Bezier'
+        DisabledImageName = 'btBezier'
+        TabOrder = 2
+        OnClick = btBezierClick
+      end
+      object btBSspline: TButton
+        Left = 144
+        Top = 88
+        Width = 97
+        Height = 25
+        Caption = 'B-Spline'
+        DisabledImageName = 'btBSpline'
+        TabOrder = 3
+        OnClick = btBSsplineClick
+      end
+      object btSplineDifference: TButton
+        Left = 48
+        Top = 136
+        Width = 161
+        Height = 25
+        Caption = 'bSpline - fwd Difference'
+        TabOrder = 4
+        OnClick = btSplineDifferenceClick
+      end
+    end
   end
   object Circulo: TButton
     Left = 556

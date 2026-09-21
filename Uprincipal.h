@@ -64,6 +64,12 @@ __published:	// IDE-managed Components
 	TButton *btReflexaoEixoX;
 	TButton *Y;
 	TButton *btEixoXY;
+	TTabSheet *TabSheet3;
+	TButton *btHermite;
+	TButton *btCurvaCasteljau;
+	TButton *btBezier;
+	TButton *btBSspline;
+	TButton *btSplineDifference;
 	TButton *btClipping;
 	void __fastcall Image1MouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
 	void __fastcall lbPoligonosClick(TObject *Sender);
@@ -86,6 +92,11 @@ __published:	// IDE-managed Components
 	void __fastcall btReflexaoEixoXClick(TObject *Sender);
 	void __fastcall YClick(TObject *Sender);
 	void __fastcall btEixoXYClick(TObject *Sender);
+	void __fastcall btCurvaCasteljauClick(TObject *Sender);
+	void __fastcall btBezierClick(TObject *Sender);
+	void __fastcall btHermiteClick(TObject *Sender);
+	void __fastcall btBSsplineClick(TObject *Sender);
+	void __fastcall btSplineDifferenceClick(TObject *Sender);
 	void __fastcall btClippingClick(TObject *Sender);
 
 private:	// User declarations
