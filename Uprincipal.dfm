@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   Caption = 'Computacao Grafica'
   ClientHeight = 581
-  ClientWidth = 925
+  ClientWidth = 1044
   Color = clBtnHighlight
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,21 +26,21 @@ object Form1: TForm1
     Caption = 'lbVp'
   end
   object lbPoligono: TLabel
-    Left = 708
+    Left = 778
     Top = 99
     Width = 53
     Height = 15
     Caption = 'Poligonos'
   end
   object lbPonto: TLabel
-    Left = 558
+    Left = 626
     Top = 99
     Width = 37
     Height = 15
     Caption = 'Pontos'
   end
   object lbZoom: TLabel
-    Left = 774
+    Left = 934
     Top = 8
     Width = 47
     Height = 15
@@ -65,7 +65,7 @@ object Form1: TForm1
     end
   end
   object lbPoligonos: TListBox
-    Left = 704
+    Left = 774
     Top = 120
     Width = 142
     Height = 151
@@ -74,16 +74,16 @@ object Form1: TForm1
     OnClick = lbPoligonosClick
   end
   object lbPontos: TListBox
-    Left = 558
+    Left = 626
     Top = 120
-    Width = 121
+    Width = 142
     Height = 151
     ItemHeight = 15
     TabOrder = 2
   end
   object btIniciar: TButton
-    Left = 595
-    Top = 8
+    Left = 579
+    Top = 29
     Width = 75
     Height = 25
     Caption = 'Iniciar'
@@ -91,8 +91,8 @@ object Form1: TForm1
     OnClick = btIniciarClick
   end
   object btLimpar: TButton
-    Left = 676
-    Top = 8
+    Left = 660
+    Top = 29
     Width = 75
     Height = 25
     Caption = 'Limpar'
@@ -100,8 +100,8 @@ object Form1: TForm1
     OnClick = btLimparClick
   end
   object btBaixo: TButton
-    Left = 612
-    Top = 70
+    Left = 814
+    Top = 60
     Width = 42
     Height = 25
     Caption = #11107
@@ -109,8 +109,8 @@ object Form1: TForm1
     OnClick = btBaixoClick
   end
   object btCima: TButton
-    Left = 612
-    Top = 39
+    Left = 814
+    Top = 29
     Width = 42
     Height = 25
     Caption = ' '#11105
@@ -118,8 +118,8 @@ object Form1: TForm1
     OnClick = btCimaClick
   end
   object btEsquerda: TButton
-    Left = 564
-    Top = 70
+    Left = 766
+    Top = 60
     Width = 42
     Height = 25
     Caption = #11104
@@ -127,8 +127,8 @@ object Form1: TForm1
     OnClick = btEsquerdaClick
   end
   object btDireita: TButton
-    Left = 660
-    Top = 70
+    Left = 862
+    Top = 60
     Width = 42
     Height = 25
     Caption = #11106
@@ -136,7 +136,7 @@ object Form1: TForm1
     OnClick = btDireitaClick
   end
   object btZoomOut: TButton
-    Left = 771
+    Left = 931
     Top = 29
     Width = 22
     Height = 25
@@ -145,7 +145,7 @@ object Form1: TForm1
     OnClick = btZoomOutClick
   end
   object btZoomIn: TButton
-    Left = 799
+    Left = 959
     Top = 29
     Width = 22
     Height = 25
@@ -156,9 +156,9 @@ object Form1: TForm1
   object componentes: TPageControl
     Left = 580
     Top = 277
-    Width = 337
+    Width = 437
     Height = 202
-    ActivePage = TabSheet3
+    ActivePage = TabSheet3D
     TabOrder = 10
     object TabSheet1: TTabSheet
       Caption = 'Mundo'
@@ -271,21 +271,21 @@ object Form1: TForm1
         Caption = 'rotacaoX'#176
       end
       object edTranslacaoX: TEdit
-        Left = 19
+        Left = 16
         Top = 32
-        Width = 38
+        Width = 48
         Height = 23
         TabOrder = 0
-        TextHint = '   T'
+        Text = '10'
       end
       object edTranslacaoY: TEdit
-        Left = 19
+        Left = 16
         Top = 82
-        Width = 38
+        Width = 48
         Height = 23
         ImeName = 'etTranslacaoY'
         TabOrder = 1
-        TextHint = '    T'
+        Text = '10'
       end
       object btTranslornar: TButton
         Left = 3
@@ -297,20 +297,20 @@ object Form1: TForm1
         OnClick = btTranslornarClick
       end
       object edEscalonamentoX: TEdit
-        Left = 104
+        Left = 100
         Top = 32
-        Width = 41
+        Width = 48
         Height = 23
         TabOrder = 3
-        TextHint = '   E'
+        Text = '1.25'
       end
       object edEscalonamentoY: TEdit
-        Left = 104
+        Left = 100
         Top = 82
-        Width = 41
+        Width = 48
         Height = 23
         TabOrder = 4
-        TextHint = '   E'
+        Text = '1.25'
       end
       object btEscalonar: TButton
         Left = 92
@@ -323,12 +323,12 @@ object Form1: TForm1
         OnClick = btEscalonarClick
       end
       object edRotacaoX: TEdit
-        Left = 200
+        Left = 196
         Top = 82
-        Width = 41
+        Width = 48
         Height = 23
         TabOrder = 6
-        TextHint = '   R'
+        Text = '30'
       end
       object btRotacionar: TButton
         Left = 183
@@ -449,6 +449,160 @@ object Form1: TForm1
         Caption = 'bSpline - fwd Difference'
         TabOrder = 4
         OnClick = btSplineDifferenceClick
+      end
+    end
+    object TabSheet3D: TTabSheet
+      Caption = 'Objeto 3D'
+      ImageIndex = 5
+      object btCriarCubo3D: TButton
+        Left = 6
+        Top = 6
+        Width = 100
+        Height = 25
+        Caption = 'Cubo 3D'
+        TabOrder = 0
+        OnClick = btCriarCubo3DClick
+      end
+      object btCriarPiramide3D: TButton
+        Left = 114
+        Top = 6
+        Width = 105
+        Height = 25
+        Caption = 'Pir'#226'mide 3D'
+        TabOrder = 1
+        OnClick = btCriarPiramide3DClick
+      end
+      object btLimpar3D: TButton
+        Left = 227
+        Top = 6
+        Width = 97
+        Height = 25
+        Caption = 'Limpar 3D'
+        TabOrder = 2
+        OnClick = btLimpar3DClick
+      end
+      object rgProjecao3D: TRadioGroup
+        Left = 6
+        Top = 35
+        Width = 318
+        Height = 42
+        Caption = 'Proje'#231#227'o 3D'
+        Columns = 3
+        ItemIndex = 1
+        Items.Strings = (
+          'Ortogr'#225'fica'
+          'Perspectiva'
+          'Cavaleira')
+        TabOrder = 3
+        OnClick = rgProjecao3DClick
+      end
+      object btRotXMais: TButton
+        Left = 6
+        Top = 80
+        Width = 50
+        Height = 24
+        Caption = 'Rx +15'#176
+        TabOrder = 4
+        OnClick = btRotXMaisClick
+      end
+      object btRotXMenos: TButton
+        Left = 58
+        Top = 80
+        Width = 50
+        Height = 24
+        Caption = 'Rx -15'#176
+        TabOrder = 5
+        OnClick = btRotXMenosClick
+      end
+      object btRotYMais: TButton
+        Left = 114
+        Top = 80
+        Width = 50
+        Height = 24
+        Caption = 'Ry +15'#176
+        TabOrder = 6
+        OnClick = btRotYMaisClick
+      end
+      object btRotYMenos: TButton
+        Left = 166
+        Top = 80
+        Width = 50
+        Height = 24
+        Caption = 'Ry -15'#176
+        TabOrder = 7
+        OnClick = btRotYMenosClick
+      end
+      object btRotZMais: TButton
+        Left = 222
+        Top = 80
+        Width = 50
+        Height = 24
+        Caption = 'Rz +15'#176
+        TabOrder = 8
+        OnClick = btRotZMaisClick
+      end
+      object btRotZMenos: TButton
+        Left = 274
+        Top = 80
+        Width = 50
+        Height = 24
+        Caption = 'Rz -15'#176
+        TabOrder = 9
+        OnClick = btRotZMenosClick
+      end
+      object btEscalaMais3D: TButton
+        Left = 6
+        Top = 107
+        Width = 68
+        Height = 24
+        Caption = 'Esc +15%'
+        TabOrder = 10
+        OnClick = btEscalaMais3DClick
+      end
+      object btEscalaMenos3D: TButton
+        Left = 76
+        Top = 107
+        Width = 68
+        Height = 24
+        Caption = 'Esc -15%'
+        TabOrder = 11
+        OnClick = btEscalaMenos3DClick
+      end
+      object btTransZMais: TButton
+        Left = 146
+        Top = 107
+        Width = 56
+        Height = 24
+        Caption = 'Tz +20'
+        TabOrder = 12
+        OnClick = btTransZMaisClick
+      end
+      object btTransZMenos: TButton
+        Left = 204
+        Top = 107
+        Width = 56
+        Height = 24
+        Caption = 'Tz -20'
+        TabOrder = 13
+        OnClick = btTransZMenosClick
+      end
+      object btReset3D: TButton
+        Left = 262
+        Top = 107
+        Width = 62
+        Height = 24
+        Caption = 'Reset'
+        TabOrder = 15
+        OnClick = btReset3DClick
+      end
+      object btRotEixoArbitrario: TButton
+        Left = 6
+        Top = 134
+        Width = 318
+        Height = 26
+        Caption = 'Girar em Eixo Arbitr'#225'rio (P1 '#8594' P2)...'
+        TabOrder = 14
+        OnClick = btRotEixoArbitrarioClick
       end
     end
   end

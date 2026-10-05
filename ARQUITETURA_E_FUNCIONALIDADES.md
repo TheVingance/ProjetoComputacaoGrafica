@@ -148,3 +148,47 @@ Para cada segmento de reta entre $P_1$ e $P_2$, calculam-se os outcodes $c_1 = \
 ### C. Comportamento na Aplicação
 Ao selecionar um polígono no `TListBox` e clicar no botão **Clipping █** (`btClipping`), o sistema executa o recorte de todas as arestas do polígono em relação à janela retangular vermelha definida em mundo ($[-100, -100]$ a $[100, 100]$) e atualiza a cena em tempo real.
 
+---
+
+## 9. Modelagem e Transformações 3D (Modelo de Arame)
+
+Módulo implementado para manipulação e visualização de objetos tridimensionais representados por modelos de arame (*wireframe*).
+
+### A. Classe `Ponto3D` ([`uPonto3D.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPonto3D.h) / [`uPonto3D.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPonto3D.cpp))
+Representa um ponto no espaço euclidiano contínuo $(x, y, z)$ e realiza as operações fundamentais:
+1. **Translação 3D**:
+   $$x' = x + dx, \quad y' = y + dy, \quad z' = z + dz$$
+2. **Escalonamento 3D**:
+   $$x' = x \cdot sx, \quad y' = y \cdot sy, \quad z' = z \cdot sz$$
+3. **Rotações nos Eixos Cartesianos**:
+   * **Eixo X**:
+     $$y' = y\cos\theta - z\sin\theta, \quad z' = y\sin\theta + z\cos\theta$$
+   * **Eixo Y**:
+     $$x' = x\cos\theta + z\sin\theta, \quad z' = -x\sin\theta + z\cos\theta$$
+   * **Eixo Z**:
+     $$x' = x\cos\theta - y\sin\theta, \quad y' = x\sin\theta + y\cos\theta$$
+4. **Rotação em Torno de um Eixo Arbitrário**:
+   Implementada seguindo o método dos **7 passos de alinhamento com os eixos coordenados** (Slides 20 a 29 da Aula 6 do Prof. Aldo von Wangenheim):
+   1. **Translação $T(-D)$**: Translada o sistema para que o ponto inicial $P_1$ do eixo fique sobre a origem ($T(-x_1, -y_1, -z_1)$).
+   2. **Rotação $R_x(\theta_x)$**: Rotação em torno do eixo $X$ para trazer o vetor diretor do eixo sobre o plano $XY$ ($z = 0$).
+   3. **Rotação $R_z(\theta_z)$**: Rotação em torno do eixo $Z$ para alinhar o eixo perfeitamente com o eixo $Y$.
+   4. **Rotação $R_y(\theta_{\text{original}})$**: Rotação em torno do eixo $Y$ pelo ângulo desejado.
+   5. **Rotação $R_z^{-1}(-\theta_z)$**: Rotação inversa em torno de $Z$ para desfazer o passo 3.
+   6. **Rotação $R_x^{-1}(-\theta_x)$**: Rotação inversa em torno de $X$ para desfazer o passo 2.
+   7. **Translação $T^{-1}(+D)$**: Translação inversa de retorno para desfazer o passo 1.
+5. **Projeções 3D $\rightarrow$ 2D**:
+   * **Ortográfica**: descarta a coordenada $z$ ($X_{2D} = x, Y_{2D} = y$).
+   * **Perspectiva**: com observador a uma distância focal $d$ ($X_{2D} = \frac{x \cdot d}{d - z}, Y_{2D} = \frac{y \cdot d}{d - z}$).
+   * **Cavaleira**: projeção oblíqua preservando a escala frontal com recuo inclinado em $45^\circ$.
+
+### B. Classe `Objeto3D` ([`uObjeto3D.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uObjeto3D.h) / [`uObjeto3D.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uObjeto3D.cpp))
+Representa um **Modelo de Arame** composto por:
+* `std::vector<Segmento3D> segmentos;` (onde cada `Segmento3D` possui um par `Ponto3D p1` e `Ponto3D p2`).
+* Executa translações, escalonamentos (na origem e no baricentro), rotações $X, Y, Z$ e rotação em torno de eixo arbitrário aplicando as transformações a todos os segmentos.
+* **Leitura de Arquivo Texto** (`carregarDeArquivo`):
+  * **Formato 1 (Segmentos diretos)**: linhas com `x1 y1 z1 x2 y2 z2`.
+  * **Formato 2 (Vértices e Arestas)**: `VERTICES N`, seguidos de $N$ linhas `x y z`, e `ARESTAS M`, seguidos de $M$ linhas com índices `i1 i2`.
+  * **Formato 3 (Wavefront .obj simples)**: linhas `v x y z` e `l v1 v2` ou `f ...`.
+* Modelos de teste inclusos: [`cubo.txt`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/cubo.txt), [`piramide.txt`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/piramide.txt) e [`casa.txt`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/casa.txt).
+
+

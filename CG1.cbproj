@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{EAFF9584-48BF-4B9C-879B-40AC000186AE}</ProjectGuid>
         <ProjectVersion>20.3</ProjectVersion>
@@ -176,6 +176,14 @@
             <FormType>dfm</FormType>
             <DependentOn>Uprincipal.h</DependentOn>
             <BuildOrder>2</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="uPonto3D.cpp">
+            <DependentOn>uPonto3D.h</DependentOn>
+            <BuildOrder>7</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="uObjeto3D.cpp">
+            <DependentOn>uObjeto3D.h</DependentOn>
+            <BuildOrder>8</BuildOrder>
         </CppCompile>
         <FormResources Include="Uprincipal.dfm"/>
         <BuildConfiguration Include="Base">

@@ -6,6 +6,7 @@
 #include "Uprincipal.h"
 #include "uPoligono.h"
 #include "uDisplay.h"
+#include <sstream>
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -36,6 +37,13 @@ double yVp2Mundo(int y, Janela Mundo, Janela vp){
 __fastcall TForm1::TForm1(TComponent* Owner) :TForm(Owner){
 
   componentes->ActivePage = TabSheet2; // Abre na aba Transformacoes
+
+  // Valores padrão fixos na aba de Transformações
+  edTranslacaoX->Text = "10";
+  edTranslacaoY->Text = "10";
+  edEscalonamentoX->Text = "1.25";
+  edEscalonamentoY->Text = "1.25";
+  edRotacaoX->Text = "30";
 
   // Eixo vertical (Y)
   pol.id = contId++;
@@ -81,16 +89,21 @@ void __fastcall TForm1::Image1MouseMove(TObject *Sender, TShiftState Shift, int 
 }
 
 //---------------------------------------------------------------------------
-// Clique na lista de poligonos: exibe os vertices do poligono selecionado em lbPontos
+// Clique na lista de poligonos: exibe os vertices ou segmentos do objeto selecionado em lbPontos
 void __fastcall TForm1::lbPoligonosClick(TObject *Sender)
 {
-	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
-		if (lbPontos) {
-			lbPontos->Items->Clear();
-		}
-		return;
+	if (!lbPontos) return;
+	lbPontos->Items->Clear();
+
+	int idx = lbPoligonos->ItemIndex;
+	if (idx < 0) return;
+
+	if (idx < (int)display.poligonos.size()) {
+		display.poligonos[idx].mostraPontos(lbPontos);
+	} else if (idx < (int)(display.poligonos.size() + display.objetos3D.size())) {
+		int idx3D = idx - (int)display.poligonos.size();
+		display.objetos3D[idx3D].mostraSegmentos(lbPontos);
 	}
-	display.poligonos[lbPoligonos->ItemIndex].mostraPontos(lbPontos);
 }
 
 //---------------------------------------------------------------------------
@@ -223,6 +236,15 @@ void __fastcall TForm1::btZoomInClick(TObject *Sender){
 	atualizaMundo(mundo);
 }
 
+// Converte texto numérico aceitando tanto ponto (.) quanto vírgula (,) como separador decimal
+static double converteNumero(String str, double defVal = 0.0) {
+	String s = str.Trim();
+	if (s.IsEmpty()) return defVal;
+	s = StringReplace(s, ".", FormatSettings.DecimalSeparator, TReplaceFlags() << rfReplaceAll);
+	s = StringReplace(s, ",", FormatSettings.DecimalSeparator, TReplaceFlags() << rfReplaceAll);
+	return StrToFloatDef(s, defVal);
+}
+
 //---------------------------------------------------------------------------
 void __fastcall TForm1::btTranslornarClick(TObject *Sender){
 	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
@@ -234,8 +256,8 @@ void __fastcall TForm1::btTranslornarClick(TObject *Sender){
 		return;
 	}
 
-	double dx = StrToFloatDef(edTranslacaoX->Text, 0);
-	double dy = StrToFloatDef(edTranslacaoY->Text, 0);
+	double dx = converteNumero(edTranslacaoX->Text, 10.0);
+	double dy = converteNumero(edTranslacaoY->Text, 10.0);
 
 	display.poligonos[lbPoligonos->ItemIndex].translacao(dx, dy);
 	display.desenha(Form1->Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
@@ -281,8 +303,8 @@ void __fastcall TForm1::btEscalonarClick(TObject *Sender){
 		return;
 	}
 
-	double dx = StrToFloatDef(edEscalonamentoX->Text, 1);
-	double dy = StrToFloatDef(edEscalonamentoY->Text, 1);
+	double dx = converteNumero(edEscalonamentoX->Text, 1.25);
+	double dy = converteNumero(edEscalonamentoY->Text, 1.25);
 
 	display.poligonos[lbPoligonos->ItemIndex].escalonamento(dx, dy);
 	display.desenha(Form1->Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
@@ -300,7 +322,7 @@ void __fastcall TForm1::btRotacionarClick(TObject *Sender){
 		return;
 	}
 
-	double graus = StrToFloatDef(edRotacaoX->Text, 0);
+	double graus = converteNumero(edRotacaoX->Text, 30.0);
 
 	display.poligonos[lbPoligonos->ItemIndex].rotacao(graus);
 	display.desenha(Form1->Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
@@ -318,7 +340,7 @@ void __fastcall TForm1::btHomoRotacaoClick(TObject *Sender){
 		return;
 	}
 
-	double graus = StrToFloatDef(edRotacaoX->Text, 0);
+	double graus = converteNumero(edRotacaoX->Text, 30.0);
 
 	display.poligonos[lbPoligonos->ItemIndex].rotacaoHomogenea(graus);
 	display.desenha(Form1->Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
@@ -559,5 +581,224 @@ void __fastcall TForm1::btClippingClick(TObject *Sender)
 	display.mostra(lbPoligonos);
 	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
 }
+
 //---------------------------------------------------------------------------
+// Atualiza todo o display (polígonos 2D e objetos 3D) e as listas da interface
+void TForm1::atualizaCena() {
+	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
+	display.mostra(lbPoligonos);
+}
+
+// Retorna o ponteiro para o Objeto3D atualmente selecionado na lista ou o último adicionado
+Objeto3D* TForm1::getObjeto3DSelecionado() {
+	if (display.objetos3D.empty()) {
+		return nullptr;
+	}
+
+	int idx = lbPoligonos->ItemIndex;
+	int inicio3D = (int)display.poligonos.size();
+	int total = inicio3D + (int)display.objetos3D.size();
+
+	if (idx >= inicio3D && idx < total) {
+		return &display.objetos3D[idx - inicio3D];
+	}
+
+	// Se nenhum 3D estiver selecionado, seleciona o último da lista
+	lbPoligonos->ItemIndex = total - 1;
+	return &display.objetos3D.back();
+}
+
+//---------------------------------------------------------------------------
+// Botão Criar Cubo 3D Padrão
+void __fastcall TForm1::btCriarCubo3DClick(TObject *Sender) {
+	Objeto3D obj(contId++, "Cubo 3D");
+	obj.criarCubo(80.0);
+	obj.rotacaoX(20.0);
+	obj.rotacaoY(30.0);
+	display.objetos3D.push_back(obj);
+	atualizaCena();
+	lbPoligonos->ItemIndex = (int)(display.poligonos.size() + display.objetos3D.size() - 1);
+	lbPoligonosClick(this);
+}
+
+// Botão Criar Pirâmide 3D Padrão
+void __fastcall TForm1::btCriarPiramide3DClick(TObject *Sender) {
+	Objeto3D obj(contId++, "Piramide 3D");
+	obj.criarPiramide(80.0, 100.0);
+	obj.rotacaoX(20.0);
+	obj.rotacaoY(30.0);
+	display.objetos3D.push_back(obj);
+	atualizaCena();
+	lbPoligonos->ItemIndex = (int)(display.poligonos.size() + display.objetos3D.size() - 1);
+	lbPoligonosClick(this);
+}
+
+// Botão Limpar 3D
+void __fastcall TForm1::btLimpar3DClick(TObject *Sender) {
+	display.objetos3D.clear();
+	if (lbPontos) lbPontos->Items->Clear();
+	atualizaCena();
+}
+
+// Seleção do Tipo de Projeção 3D (Ortográfica, Perspectiva ou Cavaleira)
+void __fastcall TForm1::rgProjecao3DClick(TObject *Sender) {
+	display.tipoProjecao3D = rgProjecao3D->ItemIndex;
+	atualizaCena();
+}
+
+// Rotações nos eixos coordenados principais (X, Y, Z)
+void __fastcall TForm1::btRotXMaisClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->rotacaoNoCentro(15.0, 0, 0);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+void __fastcall TForm1::btRotXMenosClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->rotacaoNoCentro(-15.0, 0, 0);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+void __fastcall TForm1::btRotYMaisClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->rotacaoNoCentro(0, 15.0, 0);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+void __fastcall TForm1::btRotYMenosClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->rotacaoNoCentro(0, -15.0, 0);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+void __fastcall TForm1::btRotZMaisClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->rotacaoNoCentro(0, 0, 15.0);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+void __fastcall TForm1::btRotZMenosClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->rotacaoNoCentro(0, 0, -15.0);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+// Escalonamento 3D
+void __fastcall TForm1::btEscalaMais3DClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->escalonamentoNoCentro(1.15, 1.15, 1.15);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+void __fastcall TForm1::btEscalaMenos3DClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->escalonamentoNoCentro(0.85, 0.85, 0.85);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+// Translação no eixo Z (profundidade)
+void __fastcall TForm1::btTransZMaisClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->translacao(0, 0, 20.0);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+void __fastcall TForm1::btTransZMenosClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+	obj->translacao(0, 0, -20.0);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+// Reset da posição do Objeto 3D (reposiciona baricentro na origem)
+void __fastcall TForm1::btReset3DClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) return;
+	Ponto3D c = obj->centro();
+	obj->translacao(-c.x, -c.y, -c.z);
+	atualizaCena();
+	lbPoligonosClick(this);
+}
+
+// Rotação em torno de um Eixo Arbitrário definido por P1(x, y, z) e P2(x, y, z)
+void __fastcall TForm1::btRotEixoArbitrarioClick(TObject *Sender) {
+	Objeto3D *obj = getObjeto3DSelecionado();
+	if (!obj) {
+		ShowMessage("Nenhum Objeto 3D ativo na cena!");
+		return;
+	}
+
+	String entrada = InputBox("Rotacao em Eixo Arbitrario",
+		"Informe: x1 y1 z1  x2 y2 z2  angulo_graus",
+		"0 0 0  1 1 1  30");
+
+	if (entrada.Trim().IsEmpty()) {
+		return;
+	}
+
+	std::stringstream ss(AnsiString(entrada).c_str());
+	double x1, y1, z1, x2, y2, z2, angulo;
+	if (ss >> x1 >> y1 >> z1 >> x2 >> y2 >> z2 >> angulo) {
+		Ponto3D p1(x1, y1, z1);
+		Ponto3D p2(x2, y2, z2);
+		obj->rotacaoEixoArbitrario(p1, p2, angulo);
+		atualizaCena();
+		lbPoligonosClick(this);
+		ShowMessage("Rotacao de " + FloatToStr(angulo) + " graus aplicada em torno do eixo (" +
+					FloatToStr(x1) + "," + FloatToStr(y1) + "," + FloatToStr(z1) + ") -> (" +
+					FloatToStr(x2) + "," + FloatToStr(y2) + "," + FloatToStr(z2) + ")");
+	} else {
+		ShowMessage("Parametros invalidos! Digite 7 numeros separados por espaco:\nx1 y1 z1  x2 y2 z2  angulo");
+	}
+}
+
 

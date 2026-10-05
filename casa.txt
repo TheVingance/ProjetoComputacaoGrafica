@@ -1,0 +1,42 @@
+# ===============================================
+# Modelo 3D de Arame: Casa com Telhado
+# ===============================================
+VERTICES 10
+# Base retangular inferior
+-40.0 -40.0 -40.0
+ 40.0 -40.0 -40.0
+ 40.0 -40.0  40.0
+-40.0 -40.0  40.0
+# Teto da casa (base do telhado)
+-40.0  20.0 -40.0
+ 40.0  20.0 -40.0
+ 40.0  20.0  40.0
+-40.0  20.0  40.0
+# Cume do telhado
+  0.0  60.0 -40.0
+  0.0  60.0  40.0
+
+ARESTAS 17
+# Base inferior
+0 1
+1 2
+2 3
+3 0
+# Paredes verticais
+0 4
+1 5
+2 6
+3 7
+# Contorno superior das paredes
+4 5
+5 6
+6 7
+7 4
+# Telhado triangular frontal
+4 8
+5 8
+# Telhado triangular traseiro
+7 9
+6 9
+# Cume central do telhado
+8 9
