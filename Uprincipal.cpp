@@ -82,7 +82,13 @@ void __fastcall TForm1::Image1MouseMove(TObject *Sender, TShiftState Shift, int 
 //---------------------------------------------------------------------------
 void __fastcall TForm1::lbPoligonosClick(TObject *Sender)
 {
-  display.poligonos[lbPoligonos->ItemIndex].mostraPontos(lbPontos);
+	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
+		if (lbPontos) {
+			lbPontos->Items->Clear();
+		}
+		return;
+	}
+	display.poligonos[lbPoligonos->ItemIndex].mostraPontos(lbPontos);
 }
 
 //---------------------------------------------------------------------------
@@ -346,8 +352,142 @@ void __fastcall TForm1::btEixoXYClick(TObject *Sender)
 		return;
 	}
 	display.poligonos[lbPoligonos->ItemIndex].reflexaoEixoXY();
-	display.desenha(Form1->Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
+	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
 	display.poligonos[lbPoligonos->ItemIndex].mostraPontos(lbPontos);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::btCurvaCasteljauClick(TObject *Sender)
+{
+	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
+		ShowMessage("Selecione um poligono na lista 'Poligonos' primeiro!");
+		return;
+	}
+
+	Poligono polaux = display.poligonos[lbPoligonos->ItemIndex];
+	if (polaux.pontos.size() < 3) {
+		ShowMessage("O poligono selecionado precisa ter pelo menos 3 pontos para criar a curva de Casteljau.");
+		return;
+	}
+
+	Ponto p0 = polaux.pontos[0];
+	Ponto p1 = polaux.pontos[1];
+	Ponto p2 = polaux.pontos[2];
+
+	pol.casteljau(p0, p1, p2);
+	pol.id = contId++;
+	pol.tipo = 'c';
+	display.poligonos.push_back(pol);
+	pol.pontos.clear();
+	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
+	display.mostra(lbPoligonos);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::btHermiteClick(TObject *Sender)
+{
+	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
+		ShowMessage("Selecione um poligono na lista 'Poligonos' primeiro!");
+		return;
+	}
+
+	Poligono poligonoSelecionado = display.poligonos[lbPoligonos->ItemIndex];
+	if (poligonoSelecionado.pontos.size() < 4) {
+		ShowMessage("O poligono selecionado precisa ter pelo menos 4 pontos para criar a curva de Hermite.");
+		return;
+	}
+
+	Ponto p1 = poligonoSelecionado.pontos[0];
+	Ponto p2 = poligonoSelecionado.pontos[1];
+	Ponto p3 = poligonoSelecionado.pontos[2];
+	Ponto p4 = poligonoSelecionado.pontos[3];
+
+	pol.hermite(p1, p2, p3, p4);
+
+	pol.id = contId++;
+	pol.tipo = 'H';
+	display.poligonos.push_back(pol);
+	pol.pontos.clear();
+
+	display.mostra(lbPoligonos);
+	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::btBezierClick(TObject *Sender)
+{
+	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
+		ShowMessage("Selecione um poligono na lista 'Poligonos' primeiro!");
+		return;
+	}
+
+	Poligono poligonoSelecionado = display.poligonos[lbPoligonos->ItemIndex];
+	if (poligonoSelecionado.pontos.size() < 4) {
+		ShowMessage("O poligono selecionado precisa ter pelo menos 4 pontos para criar a curva de Bezier.");
+		return;
+	}
+
+	Ponto p1 = poligonoSelecionado.pontos[0];
+	Ponto p2 = poligonoSelecionado.pontos[1];
+	Ponto p3 = poligonoSelecionado.pontos[2];
+	Ponto p4 = poligonoSelecionado.pontos[3];
+
+	pol.bezier(p1, p2, p3, p4);
+
+	pol.id = contId++;
+	pol.tipo = 'B';
+	display.poligonos.push_back(pol);
+	pol.pontos.clear();
+
+	display.mostra(lbPoligonos);
+	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::btBSsplineClick(TObject *Sender)
+{
+	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
+		ShowMessage("Selecione um poligono na lista 'Poligonos' primeiro!");
+		return;
+	}
+
+	Poligono poligonoSelecionado = display.poligonos[lbPoligonos->ItemIndex];
+	if (poligonoSelecionado.pontos.size() < 4) {
+		ShowMessage("O poligono selecionado precisa ter pelo menos 4 pontos para criar a curva B-Spline.");
+		return;
+	}
+
+	Ponto p1 = poligonoSelecionado.pontos[0];
+	Ponto p2 = poligonoSelecionado.pontos[1];
+	Ponto p3 = poligonoSelecionado.pontos[2];
+	Ponto p4 = poligonoSelecionado.pontos[3];
+
+	pol.bSpline(p1, p2, p3, p4);
+
+	pol.id = contId++;
+	pol.tipo = 'B';
+	display.poligonos.push_back(pol);
+	pol.pontos.clear();
+
+	display.mostra(lbPoligonos);
+	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::btSplineDifferenceClick(TObject *Sender)
+{
+	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
+		ShowMessage("Selecione um poligono na lista 'Poligonos' primeiro!");
+		return;
+	}
+	Poligono polaux = display.poligonos[lbPoligonos->ItemIndex];
+	if (polaux.pontos.size() < 4) {
+		ShowMessage("O poligono selecionado precisa ter pelo menos 4 pontos.");
+		return;
+	}
+
+	pol.fwdDifferences(polaux.pontos[0], polaux.pontos[1], polaux.pontos[2], polaux.pontos[3]);
+	pol.id = contId++;
+	pol.tipo = 'F';
+	display.poligonos.push_back(pol);
+	pol.pontos.clear();
+	display.mostra(lbPoligonos);
+	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
 }
 //---------------------------------------------------------------------------
 // Botao Clipping: executa o recorte de Cohen-Sutherland em todos os poligonos do mundo

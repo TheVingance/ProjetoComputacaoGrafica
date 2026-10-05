@@ -29,8 +29,13 @@ int Ponto::yW2Vp(Janela mundo, Janela Vp){
 	(Vp.yMax - Vp.yMin);
 }
 
-AnsiString Ponto::mostra(){
-  return "( " + FloatToStr(x) + "; " + FloatToStr(y) + " )";
+String Ponto::mostra(){
+  if (!this) return "()";
+  try {
+    return "( " + FloatToStr(x) + "; " + FloatToStr(y) + " )";
+  } catch (...) {
+    return "( 0; 0 )";
+  }
 }
 
 void Ponto::translacao(double dx, double dy){

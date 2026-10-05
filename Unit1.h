@@ -19,7 +19,7 @@ class Ponto{
 	int yW2Vp(Janela mundo, Janela Vp);
 	int xW2Vp(Janela mundo, Janela Vp);
 
-	AnsiString mostra();
+	String mostra();
 
 	void translacao(double dx, double dy);
 	void escalonamento(double dx, double dy);
