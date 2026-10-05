@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
@@ -64,8 +64,8 @@ __fastcall TForm1::TForm1(TComponent* Owner) :TForm(Owner){
   display.poligonos.push_back(pol);
   pol.pontos.clear();
 
-  display.desenha(Form1->Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
-  display.mostra(Form1->lbPoligonos);
+  display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
+  display.mostra(lbPoligonos);
 }
 
 //---------------------------------------------------------------------------
@@ -350,20 +350,65 @@ void __fastcall TForm1::btEixoXYClick(TObject *Sender)
 	display.poligonos[lbPoligonos->ItemIndex].mostraPontos(lbPontos);
 }
 //---------------------------------------------------------------------------
-// Botao Clipping: executa o recorte de Cohen-Sutherland no poligono selecionado
+// Botao Clipping: executa o recorte de Cohen-Sutherland em todos os poligonos do mundo
+// Mantem os poligonos originais e adiciona novos poligonos com tipo 'R'
 void __fastcall TForm1::btClippingClick(TObject *Sender)
 {
-	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
-		ShowMessage("Selecione um poligono na lista 'Poligonos' primeiro!");
+	// Verifica se ha poligonos no mundo alem dos eixos e retangulo de clipping
+	if (display.poligonos.size() <= 3) {
+		ShowMessage("Nenhum poligono no mundo para recortar!");
 		return;
 	}
 
-	pol = display.poligonos[lbPoligonos->ItemIndex].clipping(clipping);
-	pol.id = contId++;
-	pol.tipo = 'R';
-	display.poligonos.push_back(pol);
-	pol.pontos.clear();
+	std::vector<Poligono> novosRecortados;
+	size_t qtdAtual = display.poligonos.size();
 
+	// Percorre todos os poligonos do usuario existentes no mundo
+	for (size_t i = 3; i < qtdAtual; i++) {
+		// Ignora eixos/janela de clipping e poligonos que ja sao recortados ('R')
+		if (display.poligonos[i].tipo == 'E' || display.poligonos[i].tipo == 'R') {
+			continue;
+		}
+
+		if (display.poligonos[i].tipo == 'C') {
+			// Circunferencia: filtra pontos dentro dos limites de clipping
+			Poligono circClip;
+			for (size_t p = 0; p < display.poligonos[i].pontos.size(); p++) {
+				double px = display.poligonos[i].pontos[p].x;
+				double py = display.poligonos[i].pontos[p].y;
+				if (px >= clipping.xMin && px <= clipping.xMax &&
+					py >= clipping.yMin && py <= clipping.yMax) {
+					circClip.pontos.push_back(display.poligonos[i].pontos[p]);
+				}
+			}
+			if (!circClip.pontos.empty()) {
+				circClip.id = contId++;
+				circClip.tipo = 'R';
+				novosRecortados.push_back(circClip);
+			}
+		} else {
+			// Poligono de retas: aplica o algoritmo de Cohen-Sutherland
+			Poligono polClip = display.poligonos[i].clipping(clipping);
+			// So adiciona se tiver pontos (evita criar poligono com 0 pontos)
+			if (!polClip.pontos.empty()) {
+				polClip.id = contId++;
+				polClip.tipo = 'R';
+				novosRecortados.push_back(polClip);
+			}
+		}
+	}
+
+	if (novosRecortados.empty()) {
+		ShowMessage("Nenhum poligono possui partes dentro da regiao de clipping!");
+		return;
+	}
+
+	// Adiciona os novos poligonos recortados na lista do Display File
+	for (size_t i = 0; i < novosRecortados.size(); i++) {
+		display.poligonos.push_back(novosRecortados[i]);
+	}
+
+	pol.pontos.clear();
 	display.mostra(lbPoligonos);
 	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
 }

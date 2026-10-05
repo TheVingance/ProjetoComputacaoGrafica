@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma hdrstop
 
 #include "uPoligono.h"
@@ -33,13 +33,19 @@ void Poligono::desenharDDA(Ponto p1, Ponto p2, Janela mundo, Janela vp,TCanvas
 		length = ABS((x2 - x1));
 	else
 		length = ABS( (y2 - y1) );
-		deltax = (float) (x2- x1) / (float) length;
-		deltay = (float) (y2- y1) / (float) length;
+
+	if (length == 0) {
+		canvas->Pixels[x1][y1] = clBlue;
+		return;
+	}
+
+	deltax = (float) (x2- x1) / (float) length;
+	deltay = (float) (y2- y1) / (float) length;
 
 	x = x1 + 0.5 * SIGN (deltax);
 	y = y1 + 0.5 * SIGN (deltay);
 
-	for (i = 0; i < length; i++) {
+	for (i = 0; i <= length; i++) {
 		//setPixel( FLOOR(x), FLOOR(y));
 		canvas->Pixels[FLOOR(x)][FLOOR(y)] = clBlue;
 		x += deltax;
@@ -155,52 +161,53 @@ void Poligono::DesenhaPontoCircunferencia(int xc, int yc, int x, int y){
 
 
 void Poligono::desenha(TCanvas *canvas, Janela mundo, Janela vp, int TipoReta){
-			Ponto p1,p2;
+	if (pontos.empty()) {
+		return;
+	}
+
+	Ponto p1, p2;
 
 	if(tipo == 'C'){  // Circunferência: desenha pixels individuais na tela
-			int xvp, yvp;
-			for(int i = 0; i < pontos.size(); i++){
-				xvp = pontos[i].xW2Vp(mundo, vp);
-				yvp = pontos[i].yW2Vp(mundo, vp);
-				canvas->Pixels[xvp][yvp] = clBlack;
-
-			}
+		int xvp, yvp;
+		for(size_t i = 0; i < pontos.size(); i++){
+			xvp = pontos[i].xW2Vp(mundo, vp);
+			yvp = pontos[i].yW2Vp(mundo, vp);
+			canvas->Pixels[xvp][yvp] = clBlack;
+		}
 	} else {
+		if (pontos.size() < 2) {
+			return;
+		}
+
 		switch(TipoReta){
 		case 0:   // Reta Padrão do Windows (MoveTo / LineTo nativo do Canvas)
-			int xvp, yvp;
-			for(int i = 0; i < pontos.size(); i++){
-				xvp = pontos[i].xW2Vp(mundo, vp);
-				yvp = pontos[i].yW2Vp(mundo, vp);
-			if(i == 0)
-				canvas->MoveTo(xvp, yvp);
-			else
-				canvas->LineTo(xvp, yvp);
-
+			for(size_t i = 0; i < pontos.size(); i++){
+				int xvp = pontos[i].xW2Vp(mundo, vp);
+				int yvp = pontos[i].yW2Vp(mundo, vp);
+				if(i == 0)
+					canvas->MoveTo(xvp, yvp);
+				else
+					canvas->LineTo(xvp, yvp);
 			}
 			break;
 
 		case 1: // DDA
-			for(int i = 0; i < pontos.size()-1; i++){
+			for(size_t i = 0; i < pontos.size() - 1; i++){
 				p1 = pontos[i];
 				p2 = pontos[i+1];
-
-				desenharDDA(p1,p2,mundo,vp,canvas);
-
+				desenharDDA(p1, p2, mundo, vp, canvas);
 			}
 			break;
 
 		case 2: // BRESENHAM
-			for(int i = 0; i < pontos.size()-1; i++){
+			for(size_t i = 0; i < pontos.size() - 1; i++){
 				p1 = pontos[i];
 				p2 = pontos[i+1];
 				desenharBRESENHAM(p1, p2, mundo, vp, canvas);
 			}
 			break;
-
 		}
 	}
-
 }
 
 void Poligono::mostra(TListBox *listbox){
@@ -236,9 +243,12 @@ void Poligono::rotacao(double graus){  // Transformação 2D: Rotação simples 
 }
 
 Ponto Poligono::pontoMedio(){  // Calcula o ponto médio (centroide) do polígono para rotação homogênea
+	if (pontos.empty()) {
+		return Ponto(0, 0);
+	}
 
 	double somaX = 0, somaY = 0;
-	for (int i = 0; i < pontos.size(); i++) {
+	for (size_t i = 0; i < pontos.size(); i++) {
 		somaX += pontos[i].x;
 		somaY += pontos[i].y;
 	}

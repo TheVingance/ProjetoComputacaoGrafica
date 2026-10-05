@@ -26,7 +26,7 @@ object Form1: TForm1
     Caption = 'lbVp'
   end
   object lbPoligono: TLabel
-    Left = 685
+    Left = 708
     Top = 99
     Width = 53
     Height = 15
@@ -65,10 +65,10 @@ object Form1: TForm1
     end
   end
   object lbPoligonos: TListBox
-    Left = 685
+    Left = 704
     Top = 120
-    Width = 121
-    Height = 97
+    Width = 142
+    Height = 151
     ItemHeight = 15
     TabOrder = 1
     OnClick = lbPoligonosClick
@@ -77,7 +77,7 @@ object Form1: TForm1
     Left = 558
     Top = 120
     Width = 121
-    Height = 97
+    Height = 151
     ItemHeight = 15
     TabOrder = 2
   end
@@ -154,11 +154,11 @@ object Form1: TForm1
     OnClick = btZoomInClick
   end
   object componentes: TPageControl
-    Left = 556
-    Top = 239
+    Left = 580
+    Top = 277
     Width = 270
     Height = 202
-    ActivePage = TabSheet1
+    ActivePage = Reflexoes
     TabOrder = 10
     object TabSheet1: TTabSheet
       Caption = 'Mundo'
@@ -401,8 +401,8 @@ object Form1: TForm1
     end
   end
   object Circulo: TButton
-    Left = 556
-    Top = 447
+    Left = 580
+    Top = 485
     Width = 61
     Height = 25
     Caption = 'Circulo '#9679
@@ -410,8 +410,8 @@ object Form1: TForm1
     OnClick = CirculoClick
   end
   object btClipping: TButton
-    Left = 704
-    Top = 447
+    Left = 728
+    Top = 485
     Width = 122
     Height = 25
     Caption = 'Clipping '#9608
