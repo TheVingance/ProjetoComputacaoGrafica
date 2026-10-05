@@ -160,7 +160,7 @@ void Poligono::DesenhaPontoCircunferencia(int xc, int yc, int x, int y){
 }
 
 
-void Poligono::desenha(TCanvas *canvas, Janela mundo, Janela vp, int TipoReta){
+void Poligono::desenha(TCanvas *canvas, Janela mundo, Janela vp, int TipoReta){    // Rasterização e exibição do polígono no Canvas (Padrão, DDA ou Bresenham)
 	if (pontos.empty()) {
 		return;
 	}
@@ -210,13 +210,12 @@ void Poligono::desenha(TCanvas *canvas, Janela mundo, Janela vp, int TipoReta){
 	}
 }
 
-void Poligono::mostra(TListBox *listbox){
+void Poligono::mostra(TListBox *listbox){    // Adiciona o resumo do polígono (ID, tipo e quantidade de pontos) no TListBox
 	listbox->Items->Add(IntToStr(id) + " - " + tipo + " - " +
 	IntToStr((int)pontos.size()) + " pontos");
-
 }
 
-void Poligono::mostraPontos(TListBox *listbox){
+void Poligono::mostraPontos(TListBox *listbox){    // Exibe a lista detalhada de coordenadas de todos os vértices no TListBox
   if (!listbox) {
 	 return;
   }
@@ -263,8 +262,7 @@ Ponto Poligono::pontoMedio(){  // Calcula o ponto médio (centroide) do polígon
 	return (Ponto(pontoMedioX, pontoMedioY));
 }
 
-// Transformação 2D: Rotação Homogênea em torno do centro do polígono (Matrizes 3x3)
-void Poligono::rotacaoHomogenea(double graus){
+void Poligono::rotacaoHomogenea(double graus){    // Transformação 2D: Rotação Homogênea em torno do centro do polígono (Matrizes 3x3)
 
 	Ponto central = pontoMedio();
 
@@ -325,14 +323,12 @@ void Poligono::reflexaoEixoXY() { // Transformação 2D: Reflexão simultânea e
 	}
 }
 
-// Curva de Bézier: Algoritmo de de Casteljau (ponto inicial)
-void Poligono::casteljau(Ponto p0, Ponto p1, Ponto p2) {
+void Poligono::casteljau(Ponto p0, Ponto p1, Ponto p2) {    // Curva de Bézier: Algoritmo de de Casteljau (ponto inicial)
 	pontos.push_back(p0);
 	casteljauRecursivo(p0, p1, p2);
 }
 
-// Subdivisão recursiva de Casteljau
-void Poligono::casteljauRecursivo(Ponto p0, Ponto p1, Ponto p2) {
+void Poligono::casteljauRecursivo(Ponto p0, Ponto p1, Ponto p2) {    // Subdivisão recursiva de Casteljau
 	double distancia = sqrt((p2.x - p0.x) * (p2.x - p0.x) + (p2.y - p0.y) * (p2.y - p0.y));
 
 	if (distancia <= 1) {
@@ -352,8 +348,7 @@ void Poligono::casteljauRecursivo(Ponto p0, Ponto p1, Ponto p2) {
 	}
 }
 
-// Curva de Hermite (cálculo de vetores tangentes e polinômios cúbicos)
-void Poligono::hermite(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
+void Poligono::hermite(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {    // Curva de Hermite (cálculo de vetores tangentes e polinômios cúbicos)
 	Ponto r1, r4;
 	r1.x = p2.x - p1.x;
 	r1.y = p2.y - p1.y;
@@ -380,8 +375,7 @@ void Poligono::hermite(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
 	}
 }
 
-// Curva de Bézier cúbica via polinômios de Bernstein
-void Poligono::bezier(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
+void Poligono::bezier(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {    // Curva de Bézier cúbica via polinômios de Bernstein
 	for (double t = 0; t < 1; t += 0.01) {
 		double x = 0;
 		double y = 0;
@@ -399,8 +393,7 @@ void Poligono::bezier(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
 	}
 }
 
-// Curva B-Spline Cúbica Uniforme (multiplicação pela matriz base M)
-void Poligono::bSpline(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
+void Poligono::bSpline(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {    // Curva B-Spline Cúbica Uniforme (multiplicação pela matriz base M)
 	double M[4][4] = {{-1/6.0, 3/6.0, -3/6.0, 1/6.0},
 					  {3/6.0, -6/6.0, 3/6.0, 0/6.0},
 					  {-3/6.0, 0/6.0, 3/6.0, 0/6.0},
@@ -431,8 +424,7 @@ void Poligono::bSpline(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
 	}
 }
 
-// Curva B-Spline calculada pelo método de Diferenças Progressivas (Forward Differences)
-void Poligono::fwdDifferences(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
+void Poligono::fwdDifferences(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {    // Curva B-Spline calculada pelo método de Diferenças Progressivas (Forward Differences)
 	double M[4][4] = {{-1/6.0, 3/6.0, -3/6.0, 1/6.0},
 					  {3/6.0, -6/6.0, 3/6.0, 0/6.0},
 					  {-3/6.0, 0/6.0, 3/6.0, 0/6.0},
@@ -476,15 +468,14 @@ void Poligono::fwdDifferences(Ponto p1, Ponto p2, Ponto p3, Ponto p4) {
 	}
 }
 
-Ponto Poligono::novoPonto(Ponto aux, double x, double y){
+Ponto Poligono::novoPonto(Ponto aux, double x, double y){    // Função auxiliar para instanciar ou atualizar um Ponto com novas coordenadas
 	Ponto ponto = aux;
 	ponto.x = x;
 	ponto.y = y;
 	return ponto;
 }
 
-// Algoritmo de Cohen-Sutherland para recorte de retas contra a janela de clipping
-Poligono Poligono::clipping(Janela clip){
+Poligono Poligono::clipping(Janela clip){    // Algoritmo de Cohen-Sutherland para recorte de retas contra a janela de clipping
 	Poligono poligono;
 	Ponto auxPon;
 	int clipPonto1, clipPonto2;

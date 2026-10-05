@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   Caption = 'Computacao Grafica'
   ClientHeight = 581
-  ClientWidth = 889
+  ClientWidth = 925
   Color = clBtnHighlight
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -156,7 +156,7 @@ object Form1: TForm1
   object componentes: TPageControl
     Left = 580
     Top = 277
-    Width = 270
+    Width = 337
     Height = 202
     ActivePage = TabSheet3
     TabOrder = 10

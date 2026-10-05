@@ -69,6 +69,7 @@ __fastcall TForm1::TForm1(TComponent* Owner) :TForm(Owner){
 }
 
 //---------------------------------------------------------------------------
+// Evento MouseMove: atualiza na barra de status as coordenadas do mouse (viewport e mundo)
 void __fastcall TForm1::Image1MouseMove(TObject *Sender, TShiftState Shift, int X, int Y)
 {
 	lbVp->Caption = "( " + IntToStr(X) + ", " + IntToStr(Y) + ")";
@@ -80,6 +81,7 @@ void __fastcall TForm1::Image1MouseMove(TObject *Sender, TShiftState Shift, int 
 }
 
 //---------------------------------------------------------------------------
+// Clique na lista de poligonos: exibe os vertices do poligono selecionado em lbPontos
 void __fastcall TForm1::lbPoligonosClick(TObject *Sender)
 {
 	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
@@ -356,6 +358,7 @@ void __fastcall TForm1::btEixoXYClick(TObject *Sender)
 	display.poligonos[lbPoligonos->ItemIndex].mostraPontos(lbPontos);
 }
 //---------------------------------------------------------------------------
+// Botao Curva Casteljau: gera curva de Bezier por subdivisao recursiva (minimo 3 pontos)
 void __fastcall TForm1::btCurvaCasteljauClick(TObject *Sender)
 {
 	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
@@ -382,6 +385,7 @@ void __fastcall TForm1::btCurvaCasteljauClick(TObject *Sender)
 	display.mostra(lbPoligonos);
 }
 //---------------------------------------------------------------------------
+// Botao Hermite: interpola curva cubica de Hermite baseada em vetores tangentes (minimo 4 pontos)
 void __fastcall TForm1::btHermiteClick(TObject *Sender)
 {
 	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
@@ -411,6 +415,7 @@ void __fastcall TForm1::btHermiteClick(TObject *Sender)
 	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
 }
 //---------------------------------------------------------------------------
+// Botao Bezier: avalia curva cubica de Bezier via polinomios de Bernstein (minimo 4 pontos)
 void __fastcall TForm1::btBezierClick(TObject *Sender)
 {
 	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
@@ -440,6 +445,7 @@ void __fastcall TForm1::btBezierClick(TObject *Sender)
 	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
 }
 //---------------------------------------------------------------------------
+// Botao B-Spline: gera curva B-Spline uniforme cubica via multiplicacao matricial (minimo 4 pontos)
 void __fastcall TForm1::btBSsplineClick(TObject *Sender)
 {
 	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
@@ -469,6 +475,7 @@ void __fastcall TForm1::btBSsplineClick(TObject *Sender)
 	display.desenha(Image1->Canvas, mundo, vp, rgTipoReta->ItemIndex);
 }
 //---------------------------------------------------------------------------
+// Botao B-Spline Diferencas Progressivas: tracado rapido por diferencas finitas (minimo 4 pontos)
 void __fastcall TForm1::btSplineDifferenceClick(TObject *Sender)
 {
 	if (lbPoligonos->ItemIndex < 0 || lbPoligonos->ItemIndex >= (int)display.poligonos.size()) {
