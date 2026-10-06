@@ -70,16 +70,25 @@ Implementação do clássico algoritmo de recorte contra uma janela retangular v
   * Bit 2 (`4`): Abaixo ($y < y_{min}$)
   * Bit 3 (`8`): Acima ($y > y_{max}$)
 * **Aceitação e Rejeição Trivial**:
-  * Se $(c_1 \mid c_2) == 0$: Segmento inteiramente contido na janela (aceito sem alterações).
-  * Se $(c_1 \ \& \ c_2) \neq 0$: Ambos os pontos compartilham uma mesma região externa (rejeitado por completo).
+  * Se `(c1 | c2) == 0`: Segmento inteiramente contido na janela (aceito sem alterações).
+  * Se `(c1 & c2) != 0`: Ambos os pontos compartilham uma mesma região externa (rejeitado por completo).
 * **Interseção Linear**: Quando parcialmente contido, calcula os pontos de interseção lineares exatos com as bordas da janela e gera um novo polígono recortado (tipo `'R'`).
 
-### 5. Câmera Virtual 2D (Pan & Zoom)
+### 5. Curvas Paramétricas
+Geração e interpolação de curvas a partir de polígonos de pontos de controle selecionados na lista:
+* **Algoritmo de de Casteljau (`casteljau`)**: Subdivisão recursiva de curvas de Bézier com 3 pontos de controle ($P_0, P_1, P_2$) com critério de parada baseado na distância euclidiana ($\le 1$).
+* **Curva de Hermite (`hermite`)**: Polinômio cúbico calculado a partir de 4 pontos de controle ($P_1, P_2, P_3, P_4$), onde os vetores tangentes $R_1 = P_2 - P_1$ e $R_4 = P_4 - P_3$ definem a inclinação nas extremidades com $t \in [0, 1]$.
+* **Curva de Bézier Cúbica (`bezier`)**: Avaliação direta da base polinomial de Bernstein para 4 pontos de controle:
+  $$P(t) = (1-t)^3 P_1 + 3(1-t)^2 t P_2 + 3(1-t) t^2 P_3 + t^3 P_4, \quad t \in [0, 1]$$
+* **B-Spline Cúbica Uniforme (`bSpline`)**: Multiplicação matricial com a matriz base uniforme de B-Spline $\frac{1}{6} M_{bspline}$ aplicada aos 4 pontos geométricos $G_x$ e $G_y$.
+* **B-Spline com Diferenças Progressivas (`fwdDifferences`)**: Implementação otimizada do traçado de B-Splines calculando as derivadas discretas iniciais ($\Delta, \Delta^2, \Delta^3$) com passo $t = 0.01$, eliminando potenciações e multiplicações repetitivas no loop.
+
+### 6. Câmera Virtual 2D (Pan & Zoom)
 * **Pan (Cima, Baixo, Esquerda, Direita)**: Move os limites da janela de mundo em incrementos de 10 unidades, recalculando e redesenhando a cena.
 * **Zoom (+ e -)**: Contrai ou expande a janela de visualização do mundo, aproximando ou afastando os objetos.
 * **Inspetor de Coordenadas**: Exibe na barra de status a posição instantânea do mouse convertida para coordenadas de tela (pixels) e coordenadas do mundo real.
 
-### 6. Display File e Gerenciamento da Cena
+### 7. Display File e Gerenciamento da Cena
 * **Display File (`uDisplay.cpp` / `.h`)**: Mantém a lista dinâmica de todos os objetos gráficos da cena (`std::vector<Poligono>`).
 * **Cena Inicial**: Carrega automaticamente os eixos coordenados $Y$ (ID 0) e $X$ (ID 1) em cinza e a janela de recorte (ID 2) em vermelho.
 * **Inspeção de Vértices**: Ao selecionar um polígono no `TListBox`, todos os seus vértices são listados em tempo real na lista secundária.
@@ -95,7 +104,7 @@ Implementação do clássico algoritmo de recorte contra uma janela retangular v
 | Arquivo | Descrição |
 | :--- | :--- |
 | `Uprincipal.cpp` / `.h` / `.dfm` | Formulário principal, eventos de interface VCL, menus, botões e captura de eventos do mouse. |
-| `uPoligono.cpp` / `.h` | Implementação matemática das geometrias: DDA, Bresenham de retas e círculos, transformações 2D, reflexão e recorte Cohen-Sutherland (e curvas na branch `completo`). |
+| `uPoligono.cpp` / `.h` | Implementação matemática das geometrias: DDA, Bresenham de retas e círculos, transformações 2D, reflexão, recorte Cohen-Sutherland e curvas (Casteljau, Hermite, Bézier e B-Spline). |
 | `Unit1.cpp` / `.h` | Estrutura de `Ponto` $(x, y)$, mapeamento de coordenadas e funções de ponto individual. |
 | `UJanela.cpp` / `.h` | Definição da estrutura retangular de limites $(x_{min}, y_{min}, x_{max}, y_{max})$. |
 | `uDisplay.cpp` / `.h` | Estrutura do Display File responsável pelo redesenho de todos os polígonos no canvas. |
