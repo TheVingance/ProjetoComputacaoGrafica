@@ -21,11 +21,11 @@ A aplicação opera seguindo a arquitetura clássica de um pipeline gráfico 2D 
 
 | Arquivo | Responsabilidade Principal |
 | :--- | :--- |
-| [`Uprincipal.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Uprincipal.cpp) / [`.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Uprincipal.h) / [`.dfm`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Uprincipal.dfm) | Formulário principal, eventos de botões, interação com o mouse, Pan/Zoom e orquestração da cena. |
-| [`Unit1.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Unit1.cpp) / [`.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Unit1.h) | Classe `Ponto` $(x, y)$, mapeamento para viewport, operações de ponto e cálculo de outcode para clipping (`cohen`). |
-| [`UJanela.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/UJanela.cpp) / [`.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/UJanela.h) | Classe `Janela`, define limites retangulares ($x_{min}, y_{min}, x_{max}, y_{max}$) para Mundo, Viewport e Janela de Clipping. |
-| [`uPoligono.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPoligono.cpp) / [`.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPoligono.h) | Núcleo dos algoritmos geométricos: rasterização (DDA, Bresenham, Círculo), transformações 2D e Recorte de Linhas (Cohen-Sutherland). |
-| [`uDisplay.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uDisplay.cpp) / [`.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uDisplay.h) | Classe `DisplayFile`, gerencia a lista de polígonos da cena e redesenho total do canvas. |
+| `Uprincipal.cpp` / `.h` / `.dfm` | Formulário principal, eventos de botões, interação com o mouse, Pan/Zoom e orquestração da cena. |
+| `Unit1.cpp` / `.h` | Classe `Ponto` $(x, y)$, mapeamento para viewport, operações de ponto e cálculo de outcode para clipping (`cohen`). |
+| `UJanela.cpp` / `.h` | Classe `Janela`, define limites retangulares ($x_{min}, y_{min}, x_{max}, y_{max}$) para Mundo, Viewport e Janela de Clipping. |
+| `uPoligono.cpp` / `.h` | Núcleo dos algoritmos geométricos: rasterização (DDA, Bresenham, Círculo), transformações 2D e Recorte de Linhas (Cohen-Sutherland). |
+| `uDisplay.cpp` / `.h` | Classe `DisplayFile`, gerencia a lista de polígonos da cena e redesenho total do canvas. |
 
 ---
 
@@ -34,7 +34,7 @@ A aplicação opera seguindo a arquitetura clássica de um pipeline gráfico 2D 
 Converte entre o sistema cartesiano do **Mundo** (com origem $(0,0)$ central e números reais) e o sistema da **Viewport / Tela** (com origem no canto superior esquerdo e números inteiros em pixels).
 
 ### A. Mundo $\rightarrow$ Viewport (Tela)
-* **Localização no código**: [`Unit1.cpp:L21-L30`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Unit1.cpp#L21-L30)
+* **Localização no código**: `Unit1.cpp` (linhas 21-30)
 * **Funções**:
   * `int Ponto::xW2Vp(Janela mundo, Janela Vp)`:
     $$X_{vp} = \frac{X_w - X_{wMin}}{X_{wMax} - X_{wMin}} \cdot (X_{vpMax} - X_{vpMin})$$
@@ -42,7 +42,7 @@ Converte entre o sistema cartesiano do **Mundo** (com origem $(0,0)$ central e n
     $$Y_{vp} = \left(1 - \frac{Y_w - Y_{wMin}}{Y_{wMax} - Y_{wMin}}\right) \cdot (Y_{vpMax} - Y_{vpMin})$$
 
 ### B. Viewport (Tela) $\rightarrow$ Mundo
-* **Localização no código**: [`Uprincipal.cpp:L24-L30`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Uprincipal.cpp#L24-L30)
+* **Localização no código**: `Uprincipal.cpp` (linhas 24-30)
 * **Funções**:
   * `double xVp2Mundo(int x, Janela mundo, Janela vp)`: Calcula a inversa de $X$ ao clicar com o mouse.
   * `double yVp2Mundo(int y, Janela Mundo, Janela vp)`: Calcula a inversa de $Y$ (invertendo o eixo vertical da tela).
@@ -70,17 +70,17 @@ O **Display File** armazena todas as geometrias ativas da cena em um vetor dinâ
 ## 5. Algoritmos de Rasterização 2D
 
 ### A. Algoritmo DDA (Digital Differential Analyzer)
-* **Arquivo e Linhas**: [`uPoligono.cpp:L20-L52`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPoligono.cpp#L20-L52)
+* **Arquivo e Linhas**: `uPoligono.cpp` (linhas 20-52)
 * **Função**: `void Poligono::desenharDDA(...)`
 * **Conceito**: Calcula os incrementos $\Delta x$ e $\Delta y$ baseados no maior lado (`length`) e soma valores fracionários a cada passo.
 
 ### B. Algoritmo de Bresenham para Retas
-* **Arquivo e Linhas**: [`uPoligono.cpp:L54-L115`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPoligono.cpp#L54-L115)
+* **Arquivo e Linhas**: `uPoligono.cpp` (linhas 54-115)
 * **Função**: `void Poligono::desenharBRESENHAM(...)`
 * **Conceito**: Traça retas usando apenas **aritmética inteira** e variável de erro acumulado, tratando todos os octantes com `s1`, `s2` e troca de eixos.
 
 ### C. Algoritmo de Bresenham / Ponto Médio para Circunferências
-* **Arquivo e Linhas**: [`uPoligono.cpp:L117-L152`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPoligono.cpp#L117-L152)
+* **Arquivo e Linhas**: `uPoligono.cpp` (linhas 117-152)
 * **Funções**:
   * `Poligono::DesenhaCircunferencia(int xc, int yc, int r)`
   * `Poligono::DesenhaPontoCircunferencia(int xc, int yc, int x, int y)`
@@ -125,9 +125,9 @@ Todas as transformações operam sobre as coordenadas dos vértices do polígono
 ## 8. Recorte de Linhas 2D: Algoritmo de Cohen-Sutherland
 
 * **Arquivos e Funções**:
-  * [`Unit1.cpp:L32-L41`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Unit1.cpp#L32-L41): `int Ponto::cohen(Janela clipping)`
-  * [`uPoligono.cpp:L250-L315`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPoligono.cpp#L250-L315): `Poligono Poligono::clipping(Janela clip)`
-  * [`Uprincipal.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Uprincipal.cpp): `btClippingClick(TObject *Sender)`
+  * `Unit1.cpp` (linhas 32-41): `int Ponto::cohen(Janela clipping)`
+  * `uPoligono.cpp` (linhas 250-315): `Poligono Poligono::clipping(Janela clip)`
+  * `Uprincipal.cpp`: `btClippingClick(TObject *Sender)`
 
 ### A. Regiões e Códigos de Saída (Outcodes)
 O espaço 2D é dividido em 9 regiões pela janela de clipping ($x_{min}, y_{min}, x_{max}, y_{max}$). Cada ponto recebe um código binário de 4 bits (`TBRL` ou `LRBT`):
@@ -154,7 +154,7 @@ Ao selecionar um polígono no `TListBox` e clicar no botão **Clipping █** (`b
 
 Módulo implementado para manipulação e visualização de objetos tridimensionais representados por modelos de arame (*wireframe*).
 
-### A. Classe `Ponto3D` ([`uPonto3D.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPonto3D.h) / [`uPonto3D.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uPonto3D.cpp))
+### A. Classe `Ponto3D` (`uPonto3D.h` / `uPonto3D.cpp`)
 Representa um ponto no espaço euclidiano contínuo $(x, y, z)$ e realiza as operações fundamentais:
 1. **Translação 3D**:
    $$x' = x + dx, \quad y' = y + dy, \quad z' = z + dz$$
@@ -181,12 +181,12 @@ Representa um ponto no espaço euclidiano contínuo $(x, y, z)$ e realiza as ope
    * **Perspectiva**: com observador a uma distância focal $d$ ($X_{2D} = \frac{x \cdot d}{d - z}, Y_{2D} = \frac{y \cdot d}{d - z}$).
    * **Cavaleira**: projeção oblíqua preservando a escala frontal com recuo inclinado em $45^\circ$.
 
-### B. Classe `Objeto3D` ([`uObjeto3D.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uObjeto3D.h) / [`uObjeto3D.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uObjeto3D.cpp))
+### B. Classe `Objeto3D` (`uObjeto3D.h` / `uObjeto3D.cpp`)
 Representa um **Modelo de Arame** (*Wireframe*) composto por:
 * `std::vector<Segmento3D> segmentos;` (onde cada `Segmento3D` possui um par `Ponto3D p1` e `Ponto3D p2`).
 * Executa translações, escalonamentos (na origem e no baricentro), rotações $X, Y, Z$ e rotação em torno de eixo arbitrário aplicando as transformações a todos os segmentos.
 
-### C. Leitura de Arquivo Texto e Formato da Pirâmide ([`piramide.txt`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/piramide.txt))
+### C. Leitura de Arquivo Texto e Formato da Pirâmide (`piramide.txt`)
 O método `Objeto3D::carregarDeArquivo(caminhoArquivo)` suporta múltiplos formatos e processa nativamente o **formato da aula prática (anotado no quadro)**:
 * **Formato de Faces Triangulares (Quadro da Aula 6)**:
   Contém 12 linhas com coordenadas inteiras $x, y, z$, correspondentes às 4 faces triangulares vistas de cima que convergem no ápice $(0, 0, 50)$:
@@ -236,13 +236,13 @@ O fluxo do modelo tridimensional é estruturado em 3 etapas desacopladas:
 ```
 
 1. **Disparo da Ação**:
-   * O botão **`Pirâmide (TXT)`** em [`Uprincipal.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Uprincipal.cpp#L635) busca automaticamente `piramide.txt` na pasta do projeto/executável (sem necessidade de abrir o explorer) e instancia `Objeto3D obj`.
+   * O botão **`Pirâmide (TXT)`** em `Uprincipal.cpp` busca automaticamente `piramide.txt` na pasta do projeto/executável (sem necessidade de abrir o explorer) e instancia `Objeto3D obj`.
 2. **Construção Geométrica**:
    * `obj.carregarDeArquivo()` popula o vetor `std::vector<Segmento3D> segmentos` e adiciona ao vetor de cena `display.objetos3D`.
 3. **Exibição Inicial**:
    * O objeto é inserido na **vista de cima pura** ($z=0$ na base e $z=50$ no ápice), idêntico ao desenho no quadro.
 4. **Projeção e Renderização**:
-   * Em [`uObjeto3D.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uObjeto3D.cpp#L400), cada extremidade 3D dos segmentos é projetada para coordenadas de mundo 2D (`projetaPerspectiva()`, `projetaOrtografica()` ou `projetaCavaleira()`), mapeada para pixels da Viewport (`xW2Vp`, `yW2Vp`) e traçada no Canvas pelo algoritmo ativo (LineTo, DDA ou Bresenham).
+   * Em `uObjeto3D.cpp`, cada extremidade 3D dos segmentos é projetada para coordenadas de mundo 2D (`projetaPerspectiva()`, `projetaOrtografica()` ou `projetaCavaleira()`), mapeada para pixels da Viewport (`xW2Vp`, `yW2Vp`) e traçada no Canvas pelo algoritmo ativo (LineTo, DDA ou Bresenham).
 5. **Transformações Interativas**:
    * Botões `Rx ±15°`, `Ry ±15°` e `Rz ±15°` giram a pirâmide no próprio centro (`rotacaoNoCentro`), revelando a altura do ápice e a profundidade 3D em perspectiva.
 
