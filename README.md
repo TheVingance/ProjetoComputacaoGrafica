@@ -70,8 +70,8 @@ Implementação do clássico algoritmo de recorte contra uma janela retangular v
   * Bit 2 (`4`): Abaixo ($y < y_{min}$)
   * Bit 3 (`8`): Acima ($y > y_{max}$)
 * **Aceitação e Rejeição Trivial**:
-  * Se $(c_1 \mid c_2) == 0$: Segmento inteiramente contido na janela (aceito sem alterações).
-  * Se $(c_1 \ \& \ c_2) \neq 0$: Ambos os pontos compartilham uma mesma região externa (rejeitado por completo).
+  * Se `(c1 | c2) == 0`: Segmento inteiramente contido na janela (aceito sem alterações).
+  * Se `(c1 & c2) != 0`: Ambos os pontos compartilham uma mesma região externa (rejeitado por completo).
 * **Interseção Linear**: Quando parcialmente contido, calcula os pontos de interseção lineares exatos com as bordas da janela e gera um novo polígono recortado (tipo `'R'`).
 
 ### 5. Curvas Paramétricas

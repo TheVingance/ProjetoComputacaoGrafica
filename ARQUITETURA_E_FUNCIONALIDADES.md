@@ -138,8 +138,8 @@ O espaço 2D é dividido em 9 regiões pela janela de clipping ($x_{min}, y_{min
 
 ### B. Classificação e Decisão Trivial
 Para cada segmento de reta entre $P_1$ e $P_2$, calculam-se os outcodes $c_1 = \text{cohen}(P_1)$ e $c_2 = \text{cohen}(P_2)$:
-1. **Aceitação Trivial**: Se $(c_1 \mid c_2) == 0$, ambos os pontos estão estritamente dentro da janela; o segmento é mantido integralmente.
-2. **Rejeição Trivial**: Se $(c_1 \ \& \ c_2) \neq 0$, ambos os pontos compartilham uma mesma região externa (ex: ambos à esquerda); o segmento é completamente descartado.
+1. **Aceitação Trivial**: Se `(c1 | c2) == 0`, ambos os pontos estão estritamente dentro da janela; o segmento é mantido integralmente.
+2. **Rejeição Trivial**: Se `(c1 & c2) != 0`, ambos os pontos compartilham uma mesma região externa (ex: ambos à esquerda); o segmento é completamente descartado.
 3. **Cálculo de Interseção**: Se nenhuma condição acima for satisfeita, o segmento cruza pelo menos uma borda. Escolhe-se um ponto com código diferente de zero e calcula-se a interseção linear com a borda correspondente:
    $$x = x_1 + (x_2 - x_1) \cdot \frac{y_{\text{borda}} - y_1}{y_2 - y_1}$$
    $$y = y_1 + (y_2 - y_1) \cdot \frac{x_{\text{borda}} - x_1}{x_2 - x_1}$$
