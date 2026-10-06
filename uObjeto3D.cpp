@@ -357,6 +357,43 @@ bool Objeto3D::carregarDeArquivo(String caminhoArquivo) {
 
     file.close();
 
+    // Se foram lidos vértices avulsos (como no formato ensinado pelo professor no quadro com 3 vértices por face):
+    if (novosSegmentos.empty() && !verticesLidos.empty()) {
+        auto temSegmento = [&](const Ponto3D& a, const Ponto3D& b) {
+            for (size_t k = 0; k < novosSegmentos.size(); k++) {
+                const Segmento3D& s = novosSegmentos[k];
+                bool direto = (fabs(s.p1.x - a.x) < 1e-4 && fabs(s.p1.y - a.y) < 1e-4 && fabs(s.p1.z - a.z) < 1e-4) &&
+                              (fabs(s.p2.x - b.x) < 1e-4 && fabs(s.p2.y - b.y) < 1e-4 && fabs(s.p2.z - b.z) < 1e-4);
+                bool inverso = (fabs(s.p1.x - b.x) < 1e-4 && fabs(s.p1.y - b.y) < 1e-4 && fabs(s.p1.z - b.z) < 1e-4) &&
+                               (fabs(s.p2.x - a.x) < 1e-4 && fabs(s.p2.y - a.y) < 1e-4 && fabs(s.p2.z - a.z) < 1e-4);
+                if (direto || inverso) return true;
+            }
+            return false;
+        };
+
+        if (verticesLidos.size() % 3 == 0) {
+            // Formato de aula do professor: grupos de 3 vértices definindo faces triangulares
+            for (size_t i = 0; i < verticesLidos.size(); i += 3) {
+                Ponto3D p0 = verticesLidos[i];
+                Ponto3D p1 = verticesLidos[i + 1];
+                Ponto3D p2 = verticesLidos[i + 2];
+                if (!temSegmento(p0, p1)) novosSegmentos.push_back(Segmento3D(p0, p1));
+                if (!temSegmento(p1, p2)) novosSegmentos.push_back(Segmento3D(p1, p2));
+                if (!temSegmento(p2, p0)) novosSegmentos.push_back(Segmento3D(p2, p0));
+            }
+        } else if (verticesLidos.size() % 2 == 0) {
+            // Pares de vértices definindo segmentos de reta
+            for (size_t i = 0; i < verticesLidos.size(); i += 2) {
+                novosSegmentos.push_back(Segmento3D(verticesLidos[i], verticesLidos[i + 1]));
+            }
+        } else {
+            // Polígono contínuo fechado
+            for (size_t i = 0; i < verticesLidos.size(); i++) {
+                novosSegmentos.push_back(Segmento3D(verticesLidos[i], verticesLidos[(i + 1) % verticesLidos.size()]));
+            }
+        }
+    }
+
     if (novosSegmentos.empty()) {
         return false;
     }

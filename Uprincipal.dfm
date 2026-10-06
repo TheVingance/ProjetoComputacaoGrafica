@@ -457,28 +457,37 @@ object Form1: TForm1
       object btCriarCubo3D: TButton
         Left = 6
         Top = 6
-        Width = 100
+        Width = 64
         Height = 25
         Caption = 'Cubo 3D'
         TabOrder = 0
         OnClick = btCriarCubo3DClick
       end
       object btCriarPiramide3D: TButton
-        Left = 114
+        Left = 73
         Top = 6
-        Width = 105
+        Width = 70
         Height = 25
-        Caption = 'Pir'#226'mide 3D'
+        Caption = 'Pir'#226'mide'
         TabOrder = 1
         OnClick = btCriarPiramide3DClick
       end
-      object btLimpar3D: TButton
-        Left = 227
+      object btCarregarPiramideTxt: TButton
+        Left = 146
         Top = 6
-        Width = 97
+        Width = 100
+        Height = 25
+        Caption = 'Pir'#226'mide (TXT)'
+        TabOrder = 2
+        OnClick = btCarregarPiramideTxtClick
+      end
+      object btLimpar3D: TButton
+        Left = 249
+        Top = 6
+        Width = 74
         Height = 25
         Caption = 'Limpar 3D'
-        TabOrder = 2
+        TabOrder = 3
         OnClick = btLimpar3DClick
       end
       object rgProjecao3D: TRadioGroup

@@ -77,6 +77,7 @@ __published:	// IDE-managed Components
 	TTabSheet *TabSheet3D;
 	TButton *btCriarCubo3D;
 	TButton *btCriarPiramide3D;
+	TButton *btCarregarPiramideTxt;
 	TButton *btLimpar3D;
 	TRadioGroup *rgProjecao3D;
 	TButton *btRotXMais;
@@ -120,6 +121,7 @@ __published:	// IDE-managed Components
 	void __fastcall btClippingClick(TObject *Sender);
 	void __fastcall btCriarCubo3DClick(TObject *Sender);
 	void __fastcall btCriarPiramide3DClick(TObject *Sender);
+	void __fastcall btCarregarPiramideTxtClick(TObject *Sender);
 	void __fastcall btLimpar3DClick(TObject *Sender);
 	void __fastcall rgProjecao3DClick(TObject *Sender);
 	void __fastcall btRotXMaisClick(TObject *Sender);

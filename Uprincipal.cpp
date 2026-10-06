@@ -7,6 +7,7 @@
 #include "uPoligono.h"
 #include "uDisplay.h"
 #include <sstream>
+#include <fstream>
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -621,7 +622,7 @@ void __fastcall TForm1::btCriarCubo3DClick(TObject *Sender) {
 	lbPoligonosClick(this);
 }
 
-// Botão Criar Pirâmide 3D Padrão
+// Botão Criar Pirâmide 3D por Código (modelo procedural)
 void __fastcall TForm1::btCriarPiramide3DClick(TObject *Sender) {
 	Objeto3D obj(contId++, "Piramide 3D");
 	obj.criarPiramide(80.0, 100.0);
@@ -631,6 +632,50 @@ void __fastcall TForm1::btCriarPiramide3DClick(TObject *Sender) {
 	atualizaCena();
 	lbPoligonos->ItemIndex = (int)(display.poligonos.size() + display.objetos3D.size() - 1);
 	lbPoligonosClick(this);
+}
+
+// Botão Carregar Pirâmide 3D direto do arquivo piramide.txt (conforme quadro do professor)
+void __fastcall TForm1::btCarregarPiramideTxtClick(TObject *Sender) {
+	// Procura o arquivo piramide.txt na pasta do projeto e pastas relativas
+	String caminhoTxt = "";
+	String opcoes[] = {
+		"piramide.txt",
+		"..\\piramide.txt",
+		"..\\..\\piramide.txt",
+		ExtractFilePath(Application->ExeName) + "piramide.txt",
+		ExtractFilePath(Application->ExeName) + "..\\piramide.txt",
+		ExtractFilePath(Application->ExeName) + "..\\..\\piramide.txt"
+	};
+	for (int i = 0; i < 6; i++) {
+		if (FileExists(opcoes[i])) {
+			caminhoTxt = opcoes[i];
+			break;
+		}
+	}
+
+	// Se não existir, cria o arquivo com as coordenadas exatas da lousa do professor
+	if (caminhoTxt.IsEmpty()) {
+		caminhoTxt = "piramide.txt";
+		std::ofstream fPadrao("piramide.txt");
+		if (fPadrao.is_open()) {
+			fPadrao << "-50 -50 0\n-50 50 0\n0 0 50\n";
+			fPadrao << "-50 -50 0\n50 -50 0\n0 0 50\n";
+			fPadrao << "-50 50 0\n50 50 0\n0 0 50\n";
+			fPadrao << "50 50 0\n50 -50 0\n0 0 50\n";
+			fPadrao.close();
+		}
+	}
+
+	Objeto3D obj(contId++, "Piramide TXT");
+	if (obj.carregarDeArquivo(caminhoTxt)) {
+		// Abre na vista de cima (sem rotação inicial, como no desenho do quadro)
+		display.objetos3D.push_back(obj);
+		atualizaCena();
+		lbPoligonos->ItemIndex = (int)(display.poligonos.size() + display.objetos3D.size() - 1);
+		lbPoligonosClick(this);
+	} else {
+		ShowMessage("Nao foi possivel carregar o arquivo 'piramide.txt'.");
+	}
 }
 
 // Botão Limpar 3D

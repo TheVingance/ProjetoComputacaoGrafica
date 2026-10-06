@@ -182,13 +182,69 @@ Representa um ponto no espaço euclidiano contínuo $(x, y, z)$ e realiza as ope
    * **Cavaleira**: projeção oblíqua preservando a escala frontal com recuo inclinado em $45^\circ$.
 
 ### B. Classe `Objeto3D` ([`uObjeto3D.h`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uObjeto3D.h) / [`uObjeto3D.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uObjeto3D.cpp))
-Representa um **Modelo de Arame** composto por:
+Representa um **Modelo de Arame** (*Wireframe*) composto por:
 * `std::vector<Segmento3D> segmentos;` (onde cada `Segmento3D` possui um par `Ponto3D p1` e `Ponto3D p2`).
 * Executa translações, escalonamentos (na origem e no baricentro), rotações $X, Y, Z$ e rotação em torno de eixo arbitrário aplicando as transformações a todos os segmentos.
-* **Leitura de Arquivo Texto** (`carregarDeArquivo`):
-  * **Formato 1 (Segmentos diretos)**: linhas com `x1 y1 z1 x2 y2 z2`.
-  * **Formato 2 (Vértices e Arestas)**: `VERTICES N`, seguidos de $N$ linhas `x y z`, e `ARESTAS M`, seguidos de $M$ linhas com índices `i1 i2`.
-  * **Formato 3 (Wavefront .obj simples)**: linhas `v x y z` e `l v1 v2` ou `f ...`.
-* Modelos de teste inclusos: [`cubo.txt`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/cubo.txt), [`piramide.txt`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/piramide.txt) e [`casa.txt`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/casa.txt).
+
+### C. Leitura de Arquivo Texto e Formato da Pirâmide ([`piramide.txt`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/piramide.txt))
+O método `Objeto3D::carregarDeArquivo(caminhoArquivo)` suporta múltiplos formatos e processa nativamente o **formato da aula prática (anotado no quadro)**:
+* **Formato de Faces Triangulares (Quadro da Aula 6)**:
+  Contém 12 linhas com coordenadas inteiras $x, y, z$, correspondentes às 4 faces triangulares vistas de cima que convergem no ápice $(0, 0, 50)$:
+  ```text
+  -50 -50 0    # Face 1 (Vértices 1, 2, 5)
+  -50 50 0
+  0 0 50
+  -50 -50 0    # Face 2 (Vértices 1, 4, 5)
+  50 -50 0
+  0 0 50
+  -50 50 0     # Face 3 (Vértices 2, 3, 5)
+  50 50 0
+  0 0 50
+  50 50 0      # Face 4 (Vértices 3, 4, 5)
+  50 -50 0
+  0 0 50
+  ```
+* **Processamento e Deduplicação de Arestas**:
+  O método lê as 4 faces triangulares, extrai os segmentos $(P_0, P_1)$, $(P_1, P_2)$ e $(P_2, P_0)$ e descarta arestas compartilhadas duplicadas, gerando com exatidão as **8 arestas do modelo de arame da pirâmide**:
+  * 4 arestas da base quadrada: $[(-50,-50) \to (-50,50)]$, $[(-50,50) \to (50,50)]$, $[(50,50) \to (50,-50)]$, $[(50,-50) \to (-50,-50)]$.
+  * 4 arestas laterais subindo ao ápice: dos 4 cantos da base até $(0, 0, 50)$.
+* **Outros formatos suportados**:
+  * Lista de segmentos diretos: linhas com `x1 y1 z1 x2 y2 z2`.
+  * Formato com blocos `VERTICES N` e `ARESTAS M`.
+  * Formato Wavefront .obj simples (`v` e `l`/`f`).
+
+---
+
+## 10. Pipeline Completo: Do Arquivo TXT à Tela 2D
+
+O fluxo do modelo tridimensional é estruturado em 3 etapas desacopladas:
+
+```
+[piramide.txt] 
+      │
+      ▼
+1. Uprincipal.cpp (btCarregarPiramideTxtClick) ──► Localiza o arquivo na pasta e aciona o carregamento
+      │
+      ▼
+2. uObjeto3D.cpp (carregarDeArquivo) ───────────► Parse linha a linha (ifstream), extrai vértices e monta os segmentos
+      │
+      ▼
+3. uDisplay.cpp (DisplayFile::desenha) ─────────► Percorre display.objetos3D chamando desenha()
+      │
+      ▼
+4. uObjeto3D.cpp (Objeto3D::desenha) ───────────► Projeta 3D->2D (Perspectiva/Ortográfica/Cavaleira), mapeia para Viewport e rasteriza no TCanvas
+```
+
+1. **Disparo da Ação**:
+   * O botão **`Pirâmide (TXT)`** em [`Uprincipal.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/Uprincipal.cpp#L635) busca automaticamente `piramide.txt` na pasta do projeto/executável (sem necessidade de abrir o explorer) e instancia `Objeto3D obj`.
+2. **Construção Geométrica**:
+   * `obj.carregarDeArquivo()` popula o vetor `std::vector<Segmento3D> segmentos` e adiciona ao vetor de cena `display.objetos3D`.
+3. **Exibição Inicial**:
+   * O objeto é inserido na **vista de cima pura** ($z=0$ na base e $z=50$ no ápice), idêntico ao desenho no quadro.
+4. **Projeção e Renderização**:
+   * Em [`uObjeto3D.cpp`](file:///c:/Users/triches/Documents/Embarcadero/Studio/Projects/projetoComputacaoGrafica/projetoComputacaoGrafica/computacaoGrafica/uObjeto3D.cpp#L400), cada extremidade 3D dos segmentos é projetada para coordenadas de mundo 2D (`projetaPerspectiva()`, `projetaOrtografica()` ou `projetaCavaleira()`), mapeada para pixels da Viewport (`xW2Vp`, `yW2Vp`) e traçada no Canvas pelo algoritmo ativo (LineTo, DDA ou Bresenham).
+5. **Transformações Interativas**:
+   * Botões `Rx ±15°`, `Ry ±15°` e `Rz ±15°` giram a pirâmide no próprio centro (`rotacaoNoCentro`), revelando a altura do ápice e a profundidade 3D em perspectiva.
+
 
 
